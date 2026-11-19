@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FocusWell: Student Focus &amp; Wellbeing Dashboard</title>
+<style>
+:root{--bg:#f3f0ff;--card:#fff;--text:#1e2433;--muted:#5d667a;--line:#dfe3ee;--accent:#6c5ce7;--mild:#2e9e5b;--mod:#c98512;--high:#d64545;--ca:#6c5ce7;--ch:#ff7a45;--cg:#14b8a6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151f;--card:#1b2030;--text:#e8ebf5;--muted:#9aa3ba;--line:#2c3350;--accent:#8193ff;--mild:#4cc27f;--mod:#f0b13a;--high:#ff6b6b}}
+:root[data-theme="dark"]{--bg:#12151f;--card:#1b2030;--text:#e8ebf5;--muted:#9aa3ba;--line:#2c3350;--accent:#8193ff;--mild:#4cc27f;--mod:#f0b13a;--high:#ff6b6b}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.5rem;margin:0}h2{font-size:1.1rem;margin:0 0 10px}h3{font-size:1rem;margin:0 0 6px}
+.sub{color:var(--muted);font-size:.9rem;margin:2px 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:16px;box-shadow:0 4px 16px rgba(108,92,231,.10)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:760px){.grid,.grid3{grid-template-columns:1fr}}
+input[type=text]{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font-size:1rem;width:100%;max-width:300px}
+.q{padding:10px 0;border-top:1px solid var(--line)}
+.q p{margin:0 0 6px;font-size:.93rem}
+.tag{font-size:.7rem;padding:1px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted);margin-left:6px;white-space:nowrap}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opts label{flex:1;min-width:64px}
+.opts input{position:absolute;opacity:0}
+.opts span{display:block;text-align:center;font-size:.76rem;padding:6px 2px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:var(--bg)}
+.opts input:checked+span{background:var(--accent);color:#fff;border-color:var(--accent)}
+.opts input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+button{font:inherit;padding:9px 16px;border-radius:9px;border:1px solid var(--accent);cursor:pointer}
+.primary{background:linear-gradient(135deg,#6c5ce7,#ff5d8f);color:#fff;border-color:transparent;font-weight:600}.ghost{background:transparent;color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 16px}
+.badge{display:inline-block;padding:3px 12px;border-radius:99px;color:#fff;font-weight:600;font-size:.85rem}
+.big{font-size:2.1rem;font-weight:700;line-height:1}
+.bar{height:14px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 4px}
+.bar i{display:block;height:100%;width:0;transition:width .6s}
+.scale{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted)}
+ul{margin:6px 0 0;padding-left:20px}li{margin-bottom:8px;font-size:.92rem}
+a{color:var(--accent)}
+.note{font-size:.8rem;color:var(--muted)}
+#results{display:none}
+.tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.tabs button{background:transparent;color:var(--accent)}
+.tabs button[aria-selected=true]{background:var(--accent);color:#fff}
+.lvl{font-size:.85rem;padding:8px 10px;border-radius:8px;background:var(--bg);margin:0 0 8px;border-left:4px solid var(--c)}
+.steps{counter-reset:s;list-style:none;padding:0}.steps li{counter-increment:s;padding-left:28px;position:relative}
+.steps li:before{content:counter(s);position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:.75rem;text-align:center;line-height:20px}
+.links a{display:block;margin-bottom:6px;font-size:.92rem}
+
+.hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#fff;border-radius:26px;padding:26px 24px 0;margin-bottom:18px;background:linear-gradient(120deg,#6c5ce7 0%,#ff5d8f 55%,#ffa94d 100%);box-shadow:0 10px 28px rgba(108,92,231,.3)}
+.hero h1{font-size:2.3rem;letter-spacing:.5px}
+.hero p{margin:6px 0 12px;max-width:430px;opacity:.95}
+.chips span{display:inline-block;background:rgba(255,255,255,.22);border-radius:99px;padding:4px 12px;font-size:.82rem;margin:0 6px 8px 0}
+.hero-txt{padding-bottom:18px;position:relative;z-index:1}
+.hero-art{display:flex;align-items:flex-end;gap:2px;position:relative;z-index:1}
+.kid{animation:bob 3s ease-in-out infinite}.kid:nth-child(2){animation-delay:-1s}.kid:nth-child(3){animation-delay:-2s}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.fl{position:absolute;font-size:1.6rem;opacity:.85;animation:bob 4s ease-in-out infinite}
+.f1{left:46%;top:12px}.f2{left:60%;top:60px;animation-delay:-1s}.f3{left:36%;top:90px;animation-delay:-2s}.f4{right:6px;top:10px;animation-delay:-.5s}
+.card h2 small{font-weight:400;font-size:.75rem;color:var(--muted);margin-left:6px}
+.qa{border-top:6px solid var(--ca)}.qh{border-top:6px solid var(--ch)}
+.opts em{display:block;font-style:normal;font-size:1.25rem;line-height:1.3}
+.prog{height:10px;border-radius:99px;background:var(--line);overflow:hidden;margin:4px 0 16px}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#6c5ce7,#ff5d8f,#ffa94d);transition:width .3s}
+.sc{position:relative;overflow:hidden}.sc.a{border-top:6px solid var(--ca)}.sc.h{border-top:6px solid var(--ch)}
+.mood{position:absolute;right:14px;top:10px;font-size:2.6rem;animation:bob 3s ease-in-out infinite}
+.tc-a{border-top:6px solid var(--ca)}.tc-h{border-top:6px solid var(--ch)}.tc-g{border-top:6px solid var(--cg)}
+li.tp{display:flex;gap:10px;list-style:none;margin-left:-20px;align-items:flex-start}
+.ic{flex:none;width:34px;height:34px;border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.banner{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-radius:20px;padding:12px 18px;margin-bottom:16px;background:linear-gradient(120deg,rgba(108,92,231,.16),rgba(20,184,166,.16));border:1px solid var(--line)}
+.banner.fac{background:linear-gradient(120deg,rgba(255,122,69,.16),rgba(108,92,231,.16))}
+.banner p{margin:0;font-weight:600;flex:1;min-width:200px}
+.breath{position:relative;height:140px;display:flex;align-items:center;justify-content:center;margin:2px 0 10px}
+.orb{width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#9be7ff,#6c5ce7);animation:br 8s ease-in-out infinite}
+@keyframes br{0%,100%{transform:scale(.8)}50%{transform:scale(1.5)}}
+.bi,.bo{position:absolute;bottom:0;font-weight:600;font-size:.85rem;animation:tx 8s infinite}
+.bo{animation-delay:-4s}
+@keyframes tx{0%,45%{opacity:1}50%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.bo{display:none}}
+.apps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:760px){.apps{grid-template-columns:1fr}}
+.app{border:1px solid var(--line);border-radius:18px;padding:14px;background:var(--bg)}
+.app .ai{font-size:2.2rem;line-height:1}
+.app h4{margin:6px 0 0;font-size:1rem}
+.app .tg{font-size:.75rem;color:var(--muted);margin:0 0 6px}
+.app p{font-size:.88rem;margin:0}
+.app a.go{display:inline-block;margin-top:10px;padding:6px 14px;border-radius:99px;background:linear-gradient(135deg,#6c5ce7,#ff5d8f);color:#fff;text-decoration:none;font-size:.82rem;font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="hero"><span class="fl f1">📚</span><span class="fl f2">💡</span><span class="fl f3">🎧</span><span class="fl f4">⚡</span>
+ <div class="hero-txt"><h1>🌟 FocusWell</h1><p>Your student dashboard for focus, calm and wellbeing. Check your attention and energy levels and get simple tips that really help.</p>
+ <div class="chips"><span>🧩 Check your focus</span><span>⚡ Know your energy</span><span>🌈 Get tips that work</span></div></div>
+ <div class="hero-art" id="heroArt" aria-hidden="true"></div></section>
+
+<div class="card">
+ <h2>👤 About you</h2>
+ <input type="text" id="name" placeholder="Student name" aria-label="Student name">
+ <p class="note">Rate how often each statement has applied to you over the <b>past 6 months</b>.</p>
+</div>
+
+<p class="note" id="pc">0 of 18 answered</p><div class="prog" aria-hidden="true"><i id="pb"></i></div>
+<div class="grid"><div class="card qa"><h2>🧩 Inattentive type<small>focus &amp; follow-through</small></h2><div id="qA"></div></div>
+<div class="card qh"><h2>⚡ Hyperactive/impulsive type<small>energy &amp; impulses</small></h2><div id="qB"></div></div></div>
+
+<div class="row">
+ <button class="primary" id="calc">✨ Calculate my scores</button>
+ <button class="ghost" id="demo">Fill sample answers</button>
+ <button class="ghost" id="reset">Reset</button>
+</div>
+<p id="msg" class="note" role="alert"></p>
+
+<div id="results">
+ <h2 id="rtitle"></h2>
+ <div class="grid" id="scores"></div>
+ <div class="card"><h2>📊 Overall profile</h2><p id="overall" style="margin:0"></p></div>
+
+ <h2>💡 Tips and strategies</h2>
+ <div class="tabs" role="tablist">
+  <button role="tab" id="t-stu" aria-selected="true">🎓 For students</button>
+  <button role="tab" id="t-fac" aria-selected="false">👩‍🏫 For faculty</button>
+ </div>
+ <div id="tipsArea"></div>
+
+ <p class="note">This is a self-report screening demo, not a diagnosis. Each subtype is scored out of 27 (0–9 mild, 10–18 moderate, 19–27 high), a simple scale used by this dashboard. Many people show some of these symptoms because of stress, anxiety, low mood or fatigue. A diagnosis can only be made by a qualified mental health professional.</p>
+</div>
+
+<p class="note" style="margin-top:24px">Tips are adapted from <i>Helping Every Learner Thrive: A Teacher’s Guide</i> by Dr. Silvy Mathew, Student Welfare Officer, Rajagiri School of Engineering &amp; Technology.</p>
+</div>
+
+<script>
+const SC=["Never","Rarely","Sometimes","Often"],EM=["😌","🙂","😅","😵"];
+const QA=["Fail to give close attention to details or make careless mistakes in coursework.","Have difficulty sustaining attention in lectures, reading or homework.","Seem not to listen when spoken to directly.","Do not follow through on instructions and fail to finish assignments.","Have difficulty organising tasks, notes, materials and time.","Avoid or dislike tasks needing sustained mental effort (reports, long readings, forms).","Lose things needed for tasks (books, phone, wallet, keys).","Am easily distracted by outside noise or unrelated thoughts.","Am forgetful in daily activities (deadlines, messages, chores)."];
+const QH=["Fidget, tap or squirm, or shake my legs.","Leave my seat when expected to stay seated (lectures, meetings).","Feel restless or unable to settle in places where it is not appropriate.","Have trouble doing leisure activities quietly.","Feel “on the go”, as if driven by a motor.","Talk excessively.","Blurt out answers before questions are finished.","Have difficulty waiting for my turn (queues, conversations).","Interrupt or intrude on others’ conversations or activities."];
+const Q=[...QA.map(t=>[t,"a"]),...QH.map(t=>[t,"h"])];
+const $=id=>document.getElementById(id);
+const NAME={a:"Inattentive",h:"Hyperactive/impulsive"};
+const COL={mild:"var(--mild)",moderate:"var(--mod)",high:"var(--high)"};
+const classify=s=>s<=9?"mild":s<=18?"moderate":"high";
+
+function build(){
+ const html=(from,to)=>Q.slice(from,to).map((q,i)=>{const n=from+i;
+  return `<div class="q"><p>${i+1}. ${q[0]}</p><div class="opts">`+
+  SC.map((o,v)=>`<label><input type="radio" name="q${n}" value="${v}"><span><em>${EM[v]}</em>${o}</span></label>`).join("")+`</div></div>`}).join("");
+ $("qA").innerHTML=html(0,9);$("qB").innerHTML=html(9,18);
+}
+build();
+
+const CD={
+ a:{
+  stu:[
+   ["Study in short blocks (Pomodoro)","Study for 25 minutes, then rest for 5 minutes. Drink water or walk, but do not scroll your phone. After four rounds, take a longer break. A big task feels easier in small parts.","https://arc.duke.edu/pomodoro-technique","Pomodoro guide (Duke)"],
+   ["Park stray thoughts","Keep a paper next to you. When a random thought comes, write it down and go back to work. Read it after you finish."],
+   ["Write things down","Use a small notebook for your to-do list and deadlines. A wall clock with hands and phone alarms help you see the time."],
+   ["Plan your day","Make a timetable from wake-up to bedtime in one-hour slots. At the end of the week, check how you spent your time."],
+   ["Do the important things first","Sort your tasks. Important and urgent: do it now. Important but not urgent: plan a time (studying, projects, exercise). Urgent but not important: keep it short. Neither: skip it, like scrolling social media."],
+   ["Set clear goals","Make each goal clear, easy to measure, doable, useful and with a date. Example: pass the Fluid Mechanics exam in April by studying 30 minutes daily, taking a test after each chapter and meeting your teacher every week."],
+   ["Study with a friend","Pair up with a helpful, organised friend to share notes, remind each other of deadlines and go through assignments. A group of 3–4 with fixed study times works well."],
+   ["Start early and practise","Begin each assignment on the day you get it. Practise writing answers within the exam time. What you write is easier to remember in the exam."]],
+  fac:[
+   ["Seat near the front","Let the student sit in the front row or near you. It cuts distractions and makes it easier to help."],
+   ["Give short instructions","Break long instructions into small steps, both spoken and written."],
+   ["Share samples and templates","Give a format for assignments so the student does not miss key points."],
+   ["Teach in different ways","Use diagrams, flowcharts, short videos and hands-on work. Many students learn better this way than by reading alone."],
+   ["Bring attention back gently","If the student drifts, say their name softly, make brief eye contact and check if they followed. Do it quietly so they do not feel embarrassed."],
+   ["Check in often","Ask briefly how their work is going. Regular check-ins keep the student on track and help early."],
+   ["Buddy and study groups","Pair the student with a helpful classmate, or a group of 3–4 with one organised student. Share notes and fix study times."],
+   ["Help in exams","Give practice tests. Extra exam time is possible with a valid certificate. Project work can replace some theory exams if the rules allow."]]},
+ h:{
+  stu:[
+   ["Belly breathing","Practise every day to feel calm. The steps are in the box below.","https://my.clevelandclinic.org/health/articles/9445-diaphragmatic-breathing","Belly (diaphragmatic) breathing guide"],
+   ["Calm down and relax","Try box breathing, 4-7-8 breathing or tensing and relaxing your muscles when you feel restless. Links are below.","https://health.clevelandclinic.org/breathwork","More breathing methods"],
+   ["Move quietly","Use a small fidget toy or doodle. You can also ask to step out for water or the washroom. A little movement helps you focus again."],
+   ["Pause before you speak","Count to three before you answer. Write down your thought to share later, let others finish, and wait for your turn."],
+   ["Use screens less","Try to stay under 30 minutes of screen time a day. To relax, listen to music, take a short walk, talk to someone, play with a pet or do a small chore."],
+   ["Mix active and quiet work","Switch between active tasks (labs, group work, walking while revising) and quiet study so your energy is used well."]],
+  fac:[
+   ["Explain the rules","Explain class rules clearly at the start. It helps students stay calm and not disturb others."],
+   ["Allow short breaks","Let students step out quickly for water or the washroom. They come back calmer and more focused."],
+   ["Give active tasks","Use activities, demos and workshops, and small jobs like handing out papers, so their energy is used well."],
+   ["Teach turn-taking","Set simple rules for answering and discussion. If a student blurts out or interrupts, correct them kindly in private."],
+   ["Praise, with firm limits","Appreciate small tasks done well. Avoid punishment, but do not ignore deadlines or behaviour either."],
+   ["Avoid labels","Do not call a student careless, irresponsible or lazy. They are often already trying hard, and labels take away their motivation."]]},
+ g:{
+  stu:[
+   ["Eat well","Eat regular, healthy meals and do not skip breakfast. Include protein, whole grains, fruits, vegetables, fish, nuts and seeds. Have fewer sweets, energy drinks and strong coffee or tea. <b>Why it helps:</b> steady energy keeps you alert and focused, and good food helps your memory."],
+   ["Drink enough water","Keep a water bottle on your desk and sip all day, not only when you feel thirsty. Light yellow urine means you are drinking enough. <b>Why it helps:</b> even a small lack of water makes you tired and weakens focus and memory."],
+   ["Sleep well","Sleep 7–8 hours at the same time each night and keep your phone away before bed. <b>Why it helps:</b> sleep rests the brain, improves mood and helps you remember what you studied. Too little sleep makes you drowsy and easily distracted."],
+   ["Move every day","Do about an hour of sport or exercise (brisk walk, cycling, games, gym). <b>Why it helps:</b> exercise makes you more alert, focused and happy, and helps you learn and remember."],
+   ["Success jar","Write each small win on a slip of paper and put it in a jar (one hour of study, work done on time). Read them when you feel low."],
+   ["Picture your goal","Imagine yourself getting your degree on convocation day with family and friends. It keeps you going on tough days."],
+   ["Ask for help","Talk to your mentor, a faculty member you are comfortable with, or the Student Welfare Officer (counsellor) of the college for further help."]],
+  fac:[
+   ["Listen kindly","Do not judge feelings of failure, worry or guilt. Tell the student it is hard, that the right help works, and that other students have improved a lot."],
+   ["Make asking for help normal","Say, “Many hard-working students find it hard to focus. Let’s try some ways that help.” This lowers shame."],
+   ["Focus on strengths","Notice effort, creativity and progress, not only weak points. These students are often smart but find planning and focus hard."],
+   ["Make healthy habits easy","Allow water bottles in class, plan short breaks in long sessions and avoid very late deadlines when possible. Regular meals, water, sleep and exercise help students stay alert, focus and remember."],
+   ["Send to the Student Welfare Officer","Teachers can send a student to the Student Welfare Officer for a full check. The officer can advise or refer to a counsellor or doctor. Keep it respectful and private."]]}
+};
+const TECH={
+ title:"Calming and focus methods",
+ dia:["Sit or lie down comfortably with your shoulders relaxed.","Put one hand on your chest and the other on your belly.","Breathe in slowly through your nose. Your belly should rise while your chest stays still.","Breathe out slowly through your lips, pulling your belly in gently.","Start with 5–10 minutes a few times a day. Slowly build up to about 20 minutes a day. It is easier lying down at first."],
+ links:[["Belly (diaphragmatic) breathing – Cleveland Clinic","https://my.clevelandclinic.org/health/articles/9445-diaphragmatic-breathing"],
+  ["Box breathing (4-4-4-4) – Cleveland Clinic","https://health.clevelandclinic.org/box-breathing-benefits"],
+  ["4-7-8 and five-finger breathing – Cleveland Clinic","https://health.clevelandclinic.org/breathwork"],
+  ["Tense and relax your muscles – Cleveland Clinic","https://health.clevelandclinic.org/progressive-muscle-relaxation-pmr"],
+  ["Pomodoro study method – Duke University","https://arc.duke.edu/pomodoro-technique"]]
+};
+const esc=s=>s;
+const IC={"Study in short blocks (Pomodoro)":"⏱️","Park stray thoughts":"💭","Write things down":"📝","Plan your day":"🗓️","Do the important things first":"🎯","Set clear goals":"🏆","Study with a friend":"🤝","Start early and practise":"🚀","Seat near the front":"🪑","Give short instructions":"✂️","Share samples and templates":"📄","Teach in different ways":"🎨","Bring attention back gently":"👋","Check in often":"💬","Buddy and study groups":"👥","Help in exams":"📋","Belly breathing":"🌬️","Calm down and relax":"🧘","Move quietly":"🤸","Pause before you speak":"⏸️","Use screens less":"📵","Mix active and quiet work":"⚖️","Explain the rules":"📣","Allow short breaks":"☕","Give active tasks":"🎬","Teach turn-taking":"🔁","Praise, with firm limits":"👏","Avoid labels":"🏷️","Eat well":"🥗","Drink enough water":"💧","Sleep well":"😴","Move every day":"🏃","Success jar":"🏅","Picture your goal":"🎓","Ask for help":"🙋","Listen kindly":"👂","Make asking for help normal":"💙","Focus on strengths":"💪","Make healthy habits easy":"🍎","Send to the Student Welfare Officer":"🤝"};
+function tipCard(title,items,k,lead){
+ return `<div class="card tc-${k}"><h3>${title}</h3>${lead?`<p class="lvl" style="--c:var(--cg)">${lead}</p>`:""}<ul>`+
+ items.map(t=>`<li class="tp"><span class="ic">${IC[t[0]]||"✨"}</span><div><b>${t[0]}.</b> ${t[1]}${t[2]?` <a href="${t[2]}" target="_blank" rel="noopener">${t[3]||"Learn more"}</a>`:""}</div></li>`).join("")+`</ul></div>`;
+}
+function teen(o){
+ const a=o.acc||[],h=o.hair,sk=o.skin,H=o.style,has=k=>a.includes(k),T=o.blazer||o.tee,R=o.wave?-140:-12;
+ let s=`<svg class="kid" viewBox="0 0 100 165" width="86" height="142"><ellipse cx="50" cy="163" rx="30" ry="3" fill="#000" opacity=".12"/>`;
+ if(has("backpack"))s+=`<rect x="66" y="66" width="16" height="34" rx="7" fill="#6c5ce7"/><rect x="69" y="74" width="10" height="9" rx="3" fill="#4c3fd1"/>`;
+ if(has("skate"))s+=`<rect x="86" y="96" width="8" height="58" rx="4" fill="#ff5d8f"/><circle cx="90" cy="104" r="3" fill="#333"/><circle cx="90" cy="146" r="3" fill="#333"/>`;
+ if(H==="pony"||H==="bun")s+=`<path d="M64 26Q90 24 84 62Q80 46 64 42Z" fill="${h}"/>`;
+ if(H==="long")s+=`<path d="M28 40Q22 80 32 88L68 88Q78 80 72 40Z" fill="${h}"/>`;
+ s+=`<rect x="31" y="100" width="17" height="54" rx="6" fill="${o.jeans}"/><rect x="52" y="100" width="17" height="54" rx="6" fill="${o.jeans}"/><path d="M39.5 108V148M60.5 108V148" stroke="#fff" stroke-opacity=".28" stroke-dasharray="3 3"/>`;
+ if(o.rip)s+=`<rect x="34" y="124" width="11" height="6" rx="2" fill="#fff" opacity=".8"/>`;
+ s+=`<rect x="26" y="150" width="25" height="12" rx="6" fill="#fff" stroke="#ddd"/><rect x="26" y="157" width="25" height="5" rx="2.5" fill="${o.sole}"/><rect x="49" y="150" width="25" height="12" rx="6" fill="#fff" stroke="#ddd"/><rect x="49" y="157" width="25" height="5" rx="2.5" fill="${o.sole}"/>`;
+ const arm=(x,r)=>`<g transform="rotate(${r} ${x} 68)"><rect x="${x-5}" y="66" width="10" height="30" rx="5" fill="${sk}"/></g>`;
+ const sl=(x,r)=>`<g transform="rotate(${r} ${x} 68)"><rect x="${x-7}" y="62" width="14" height="${o.blazer?30:16}" rx="5" fill="${T}"/></g>`;
+ s+=arm(27,12)+arm(73,R)+`<rect x="29" y="62" width="42" height="46" rx="10" fill="${T}"/>`+sl(27,12)+sl(73,R);
+ if(o.blazer)s+=`<path d="M44 62L50 84L56 62Z" fill="${o.tee}"/><path d="M50 84V108" stroke="#0003" stroke-width="2"/>`;
+ else s+={bolt:'<path d="M53 74L44 88H50L47 100L58 84H52Z" fill="#ffd166"/>',star:'<path d="M50 74l3.5 7.5 8 1-6 5.5 1.7 8L50 92l-7.2 3.9 1.7-8-6-5.5 8-1z" fill="#fff"/>',smile:'<circle cx="50" cy="86" r="9" fill="#ffd166"/><circle cx="47" cy="84" r="1.5" fill="#333"/><circle cx="53" cy="84" r="1.5" fill="#333"/><path d="M45 89Q50 94 55 89" stroke="#333" fill="none" stroke-width="1.5"/>',stripes:'<rect x="29" y="80" width="42" height="5" fill="#fff" opacity=".8"/><rect x="29" y="90" width="42" height="5" fill="#fff" opacity=".8"/>'}[o.gfx]||"";
+ if(has("backpack"))s+=`<path d="M38 64L37 104M62 64L63 104" stroke="#4c3fd1" stroke-width="4" stroke-linecap="round"/>`;
+ s+=`<rect x="44" y="52" width="12" height="14" rx="4" fill="${sk}"/><circle cx="29" cy="40" r="4" fill="${sk}"/><circle cx="71" cy="40" r="4" fill="${sk}"/><circle cx="50" cy="38" r="21" fill="${sk}"/>`;
+ if(has("neckphones"))s+=`<path d="M35 60Q50 78 65 60" fill="none" stroke="#2d2d44" stroke-width="4"/><circle cx="35" cy="62" r="5" fill="#ff5d8f"/><circle cx="65" cy="62" r="5" fill="#ff5d8f"/>`;
+ s+=`<circle cx="34" cy="46" r="4" fill="#ff8fab" opacity=".45"/><circle cx="66" cy="46" r="4" fill="#ff8fab" opacity=".45"/><path d="M43 47Q50 54 57 47" stroke="#222" fill="none" stroke-width="2.4" stroke-linecap="round"/>`;
+ if(has("shades"))s+=`<rect x="35" y="35" width="14" height="9" rx="4" fill="#222"/><rect x="51" y="35" width="14" height="9" rx="4" fill="#222"/><path d="M49 39h2" stroke="#222" stroke-width="2"/>`;
+ else s+=`<circle cx="43" cy="40" r="2.6" fill="#222"/><circle cx="57" cy="40" r="2.6" fill="#222"/>`;
+ if(has("glasses"))s+=`<g fill="none" stroke="#2d2d44" stroke-width="2"><circle cx="43" cy="40" r="6"/><circle cx="57" cy="40" r="6"/><path d="M49 40h2"/></g>`;
+ const F={cap:`<path d="M29 40Q28 24 50 20Q72 24 71 40Q62 30 50 30Q38 30 29 40Z" fill="${h}"/><path d="M28 34Q28 11 50 11Q72 11 72 34Z" fill="${o.cap}"/><path d="M48 32Q78 27 85 36L50 38Z" fill="${o.cap2}"/>`,
+  pony:`<path d="M29 40Q27 16 50 16Q73 16 71 40Q62 26 50 28Q38 26 29 40Z" fill="${h}"/><circle cx="66" cy="30" r="3.5" fill="#ff5d8f"/>`,
+  bun:`<path d="M29 40Q27 16 50 16Q73 16 71 40Q62 26 50 28Q38 26 29 40Z" fill="${h}"/><circle cx="50" cy="11" r="8" fill="${h}"/>`,
+  quiff:`<path d="M29 38Q26 14 52 14Q76 16 71 38Q64 26 52 26Q40 26 29 38Z" fill="${h}"/><circle cx="58" cy="14" r="8" fill="${h}"/>`,
+  long:`<path d="M29 40Q27 15 50 15Q73 15 71 40Q60 24 50 26Q40 24 29 40Z" fill="${h}"/>`,
+  curly:[[33,28],[42,19],[54,17],[64,22],[69,32]].map(c=>`<circle cx="${c[0]}" cy="${c[1]}" r="9" fill="${h}"/>`).join(""),
+  beanie:`<path d="M28 34Q28 10 50 10Q72 10 72 34Z" fill="${o.cap}"/><rect x="27" y="29" width="46" height="9" rx="4.5" fill="${o.cap2}"/><circle cx="50" cy="9" r="4" fill="${o.cap2}"/>`};
+ return s+(F[H]||"")+`</svg>`;
+}
+const BOY={skin:"#8d5a3b",hair:"#1c1c1c",style:"cap",cap:"#e63946",cap2:"#b5232f",tee:"#14b8a6",gfx:"bolt",jeans:"#3b6aa8",sole:"#ff5d8f",acc:["neckphones"],wave:1};
+const GIRL={skin:"#f1c27d",hair:"#5b3a1e",style:"pony",tee:"#ffd166",gfx:"star",jeans:"#7aa5d6",rip:1,sole:"#6c5ce7",acc:["backpack"]};
+const COOL={skin:"#ffd7b5",hair:"#2d1b0e",style:"quiff",tee:"#ff7a45",gfx:"stripes",jeans:"#243b6b",sole:"#14b8a6",acc:["shades","skate"]};
+const TCH1={skin:"#e0ac69",hair:"#2b2b2b",style:"quiff",tee:"#fff",blazer:"#3b82f6",jeans:"#6b7280",sole:"#333",acc:["glasses"]};
+const TCH2={skin:"#ffd7b5",hair:"#8b4513",style:"long",tee:"#fff",blazer:"#ec4899",jeans:"#374151",sole:"#333",acc:["glasses"]};
+function appsCard(){
+ const A=[["🧠","Elevate","Brain games","Short daily games for focus, memory and reading skills. Free to start, with paid extras. On iPhone and Android.","https://apps.apple.com/app/id875063456","Open on App Store"],
+ ["🍅","Pomofocus","Pomodoro timer","A free timer in your browser, on phone or laptop. Work 25 minutes, rest 5, and keep a simple task list.","https://pomofocus.io/","Open timer"],
+ ["🌳","Forest","Stay off your phone","Plant a virtual tree and let it grow while you study. If you leave the app, the tree dies. Free to start, with paid extras.","https://www.forestapp.cc","Visit Forest"]];
+ return `<div class="card tc-g"><h3>📱 Helpful apps for focus</h3><div class="apps">`+A.map(a=>`<div class="app"><div class="ai">${a[0]}</div><h4>${a[1]}</h4><p class="tg">${a[2]}</p><p>${a[3]}</p><a class="go" href="${a[4]}" target="_blank" rel="noopener">${a[5]} ↗</a></div>`).join("")+`</div><p class="note">Apps can support good habits but do not replace help from a professional. Check prices before you buy, and keep your total screen time low.</p></div>`;
+}
+function banner(){
+ return TAB==="stu"
+ ?`<div class="banner">${teen(BOY)}${teen(GIRL)}<p>Small habits, big wins! 💪 Pick two or three tips and try them this week.</p></div>`
+ :`<div class="banner fac">${teen(TCH1)}${teen(TCH2)}<p>Small changes in class make a big difference. 🌱 Try one or two ideas this week.</p></div>`;
+}
+let R=null,TAB="stu";
+function renderTips(){
+ if(!R)return;
+ const a=R.la,h=R.lh;
+ const order=R.a>=R.h?["a","h"]:["h","a"];
+ const lv={a:R.la,h:R.lh};
+ let html=banner()+'<div class="grid">'+order.map(k=>tipCard({a:"🧩",h:"⚡"}[k]+" "+NAME[k]+" symptoms",CD[k][TAB],k,"")).join("")+"</div>";
+ html+=tipCard(TAB==="stu"?"🌈 Health, motivation and support":"💛 Supporting the whole student",CD.g[TAB],"g",TAB==="stu"?"Healthy food, water, sleep and exercise help your brain stay alert, focus and remember.":"");
+ if(TAB==="stu"){
+  html+=`<div class="grid"><div class="card"><h3>🌬️ Belly breathing: step by step</h3><div class="breath"><div class="orb"></div><span class="bi">Breathe in…</span><span class="bo">Breathe out…</span></div><ol class="steps">${TECH.dia.map(s=>`<li>${s}</li>`).join("")}</ol><p class="note">If you have asthma, a lung or heart problem, or strong anxiety, check with your doctor first.</p></div>
+  <div class="card links"><h3>Guides: ${TECH.title}</h3>${TECH.links.map(l=>`<a href="${l[1]}" target="_blank" rel="noopener">${l[0]} ↗</a>`).join("")}<p class="note">External sites open in a new tab.</p></div></div>`;
+  html+=appsCard();
+ }
+ $("tipsArea").innerHTML=html;
+ $("t-stu").setAttribute("aria-selected",TAB==="stu");
+ $("t-fac").setAttribute("aria-selected",TAB==="fac");
+}
+$("t-stu").onclick=()=>{TAB="stu";renderTips()};
+$("t-fac").onclick=()=>{TAB="fac";renderTips()};
+
+function val(n){const c=document.querySelector(`input[name="q${n}"]:checked`);return c?+c.value:null}
+function card(title,s,max,k){
+ const lv=classify(s),pct=Math.round(s/max*100);
+ const m={mild:["😎","Doing great!"],moderate:["🤔","Worth some attention"],high:["🤗","Let’s get you support"]}[lv];
+ return `<div class="card sc ${k}"><div class="mood">${m[0]}</div><h2>${title}</h2><div class="big">${s}<span class="note"> / ${max}</span></div>
+ <div style="margin:8px 0"><span class="badge" style="background:${COL[lv]}">${lv.toUpperCase()}</span> <span class="note">${m[1]}</span></div>
+ <div class="bar" role="img" aria-label="${pct} percent"><i style="background:${COL[lv]}" data-w="${pct}"></i></div>
+ <div class="scale"><span>Mild 0–9</span><span>Moderate 10–18</span><span>High 19–27</span></div></div>`;
+}
+$("calc").onclick=()=>{
+ const v=Q.map((_,i)=>val(i)),done=v.filter(x=>x!==null).length;
+ if(done<18){$("msg").textContent=`Please answer all questions (${done} of 18 answered).`;return}
+ $("msg").textContent="";
+ let a=0,h=0;Q.forEach((q,i)=>{q[1]==="a"?a+=v[i]:h+=v[i]});
+ const name=$("name").value.trim()||"Student";
+ $("rtitle").textContent=`Results for ${name}`;
+ $("scores").innerHTML=card("🧩 Inattentive score",a,27,"a")+card("⚡ Hyperactive/impulsive score",h,27,"h");
+ R={a,h,la:classify(a),lh:classify(h)};
+ let p=a===h?"Both subtypes score equally, which suggests a combined presentation.":(a>h?"Inattentive":"Hyperactive/impulsive")+" symptoms are stronger.";
+ if(Math.abs(a-h)<=3&&a!==h)p="Both subtypes score at similar levels, which suggests a combined presentation.";
+ p+=` Inattentive: ${R.la}. Hyperactive/impulsive: ${R.lh}. `+(R.la==="high"||R.lh==="high"?"A high score is worth discussing with the Student Welfare Officer or a qualified professional.":"The tips below can help with everyday focus and restlessness.");
+ $("overall").textContent=p;
+ $("results").style.display="block";
+ renderTips();
+ requestAnimationFrame(()=>document.querySelectorAll(".bar i").forEach(e=>e.style.width=e.dataset.w+"%"));
+ $("results").scrollIntoView({behavior:"smooth"});
+};
+$("demo").onclick=()=>{
+ const s=[3,2,3,2,3,2,3,2,3, 1,0,1,1,0,1,2,1,0];
+ s.forEach((x,i)=>{document.querySelector(`input[name="q${i}"][value="${x}"]`).checked=true});
+ $("name").value=$("name").value||"Sample Student";upd();
+};
+$("reset").onclick=()=>{
+ document.querySelectorAll("input[type=radio]").forEach(r=>r.checked=false);
+ $("name").value="";$("msg").textContent="";$("results").style.display="none";R=null;upd();
+ window.scrollTo({top:0,behavior:"smooth"});
+};
+function upd(){const n=Q.filter((_,i)=>val(i)!==null).length;$("pc").textContent=n+" of 18 answered";$("pb").style.width=(n/18*100)+"%"}
+document.addEventListener("change",upd);
+$("heroArt").innerHTML=teen(BOY)+teen(GIRL)+teen(COOL);
+</script>
+</body>
+</html>
